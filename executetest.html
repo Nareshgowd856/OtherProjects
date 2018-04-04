@@ -1,0 +1,191 @@
+﻿
+
+<div class="page">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Execute Test Case</h3>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-12" style="margin-top:10px">
+                <div class="row" style="margin-top:10px">
+                    <div class="col-md-1">
+                        <label class="control-label">Project</label>
+                    </div>
+                    <div class="col-md-2">
+                        <select data-ng-model="projects" class="form-control" ng-change="GetModulesList()" ng-options="projects as projects.project_name for projects in projectsList  |filter:status ='Open'">
+                            <option value='' selected disabled>Select Project</option>
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        <label class="control-label">Test Phase</label>
+                    </div>
+                    <div class="col-md-2">
+                        <select data-ng-model="testphaseid" class="form-control" ng-options="testphase.id as testphase.reference_value for testphase in RefMaster | filter:{groupid: 3 }">
+                            <option value='' selected disabled>Select Test Phase</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:10px">
+                    <table class="table table-condensed table-bordered" style="width:100%">
+                        <tr ng-repeat-start="module in ModuleList">
+                            <td style="width:30px; vertical-align:middle;">
+                                <button ng-click="expanded = !expanded" expand>
+                                    <span ng-bind="expanded ? '-' : '+'"></span>
+                                </button>
+                            </td>
+                            <th style="font-size:20px" class="notification">
+                                {{module.module_name}}
+                                <div class="button">
+                                    <span class="fa fa-file-text" style="width: 25px; padding-top: 5px;"></span>
+                                    <span class="button_badge">{{module.testcasecount}}</span>
+                                </div>
+                                <div class="button">
+                                    <span class="fa fa-comments" style="width: 25px; padding-top: 5px;"></span>
+                                    <span class="button_badge">{{module.issuecount}}</span>
+                                </div>
+                            </th>
+                        </tr>
+
+                        <tr ng-repeat-end ng-show="expanded">
+                            <td></td>
+                            <td>
+                                <table class="table table-condensed table-bordered" style="width:100%; padding-bottom:5px">
+                                    <thead>
+                                        <tr style="background-color: #d7d1d1;">
+                                            <th style="width:3%;"></th>
+                                            <th style="width:8%;">TestCase ID</th>
+                                            <th style="width:5%;">Req</th>
+                                            <th style="width:20%;">Title</th>
+                                            <th style="width:20%;">Description</th>
+                                            <th style="width:20%;">Precondition</th>
+                                            <th style="width:20%;">Post Condition</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr style="background-color:#89c9cb; font-size:12px" ng-repeat-start="testcase in TestCasesList | filter: {module_id: module.id } | filter: {testcase_id : testcase.userid}:strict">
+                                            <td style="width:3%; vertical-align:middle;">
+                                                <button ng-click="expanded = !expanded" expand>
+                                                    <span ng-bind="expanded ? '+' : '-'"></span>
+                                                </button>
+                                            </td>
+                                            <th style="width:8%; vertical-align:middle; font-size:12px;">{{testcase.testcase_id}}</th>
+                                            <th style="width:5%; vertical-align:middle; font-size:12px;">{{testcase.usecase_id}}</th>
+                                            <th style="width:20%; vertical-align:middle; font-size:12px;">{{testcase.testcase_title}}</th>
+                                            <td style="width:20%; vertical-align:middle; font-size:12px;">{{testcase.testcase_description}}</td>
+                                            <td style="width:20%; vertical-align:middle; font-size:12px;">{{testcase.test_precondition}}</td>
+                                            <td style="width:20%; vertical-align:middle; font-size:12px;">{{testcase.test_postcondition}}</td>
+                                        </tr>
+                                        <tr ng-repeat-end ng-show="!expanded">
+
+                                            <td colspan="8">
+                                                <table class="table table-condensed table-bordered" style="margin-bottom:5px">
+                                                    <thead>
+                                                        <tr style="background-color:#d1fbf9">
+                                                            <th style="width:3%;"></th>
+                                                           <th style="width:3%;">#</th>
+                                                            <th style="width:15%;">Steps</th>
+                                                            <th style="width:15%;">TestData</th>
+                                                            <th style="width:15%;">Dependency</th>
+                                                            <th style="width:15%;">Expected Result</th>
+                                                            <th style="width:20%;">Actual Result</th>
+                                                            <th style="width:8%;">Status</th>
+                                                            <th style="width:3%;">Save</th>
+                                                            <th style="width:3%;">Bug</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr ng-repeat-start="steps in testcase.testSteps ">
+                                                            <td style="vertical-align:middle;">
+                                                                <button ng-click="expanded = !expanded" expand>
+                                                                    <span ng-bind="expanded ? '-' : '+'"></span>
+                                                                </button>
+                                                            </td>
+                                                            <td>{{$index + 1}}</td>
+                                                            <td>{{steps.description}}</td>
+                                                            <td>{{steps.testdata}}</td>
+                                                            <td>{{steps.test_dependency}}</td>
+                                                            <td>{{steps.expected_result}}</td>
+                                                            <td>
+                                                                <textarea id="actualresult" name="result{{steps.id}}" data-ng-model="steps.actual_result" style="resize:none; width:100%; font-size:13px;" />
+                                                            </td>
+                                                            <td>
+                                                                <select data-ng-model="steps.status" class="form-control" style="font-size:10px; padding:0;"
+                                                                        ng-options="teststatus.id as teststatus.reference_value for teststatus in RefMaster | filter:{groupid: 7 }">
+                                                                    <option value='' selected  disabled>Status</option>
+                                                                </select>
+                                                            </td>
+                                                            <td>
+                                                                <button class="btn btn-warning" id="Btn" type="button" ng-click="SaveTestStep(steps)" style="padding: 3px 3px;">
+                                                                    <span class="glyphicon glyphicon-floppy-disk"></span>
+                                                                </button>
+                                                            </td>
+                                                            <td>
+                                                                <button class="btn btn-warning" type="button" ng-disabled="steps.status===34" ng-click="OpenBugLogPopup(steps, testcase,module.module_name)" style="padding: 3px 3px;">
+                                                                    <span class="glyphicon glyphicon-eye-open"></span>
+                                                                    <!--<span class="button_badge">3</span>-->
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                        <tr ng-repeat-end ng-show="expanded">
+                                                            <td></td>
+                                                            <td colspan="9">
+                                                                <table class="table table-condensed table-bordered" style="margin-bottom:5px">
+                                                                    <thead>
+                                                                        <tr style="background-color:#d1fbf9">
+                                                                            <th style="width:2%; vertical-align:middle;">ID</th>
+                                                                            <!--<th style="width:2%; vertical-align:middle;">Test Case</th>-->
+                                                                            <th style="width:5%; vertical-align:middle;">Issue</th>
+                                                                            <th style="width:5%; vertical-align:middle;">Description</th>
+                                                                            <th style="width:3%; vertical-align:middle;">Type</th>
+                                                                            <th style="width:4%; vertical-align:middle;">Category</th>
+                                                                            <th style="width:2%; vertical-align:middle;">Priority</th>
+                                                                            <th style="width:4%; vertical-align:middle;">Severity</th>
+                                                                            <th style="width:4%; vertical-align:middle;">Logged By</th>
+                                                                            <th style="width:6%; vertical-align:middle;">Date Created</th>
+                                                                            <th style="width:5%; vertical-align:middle;">Status</th>
+                                                                            <th style="width:4%; vertical-align:middle;">Assigned To</th>
+                                                                            <th style="width:3%; vertical-align:middle;">View</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <tr ng-repeat-start="bug in BugsList | filter:{module_id: module.id }|filter:{teststep_id:steps.id} ">
+                                                                            <td style="">{{bug.bug_id}}</td>
+                                                                            <!--<td style="">{{bug.testcase_id}}</td>-->
+                                                                            <td style="word-break: break-all;">{{bug.issue_title}}</td>
+                                                                            <td style="word-break: break-all;">{{bug.issue_description}}</td>
+                                                                            <td style="">{{bug.issue_type}}</td>
+                                                                            <td style="">{{bug.issue_Category}}</td>
+                                                                            <td style="">{{bug.priority}}</td>
+                                                                            <td style="">{{bug.severity}}</td>
+                                                                            <td style="">{{bug.logged_by}}</td>
+                                                                            <td style="">{{bug.logged_date | date:'dd-MM-yyyy'}}</td>
+                                                                            <td style="">{{bug.status}}</td>
+                                                                            <td style="">{{bug.assign_to}}</td>
+                                                                            <td style="">
+                                                                                <button class="fa fa-eye" ng-click="testViewPopup(bug)"
+                                                                                        style="background-color: Transparent; background-repeat:no-repeat; border: none; overflow: hidden; outline:none; font-size: 15px; width:30px;"></button>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr ng-repeat-end ng-show="!expanded"></tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+
+</style>
